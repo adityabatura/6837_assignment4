@@ -28,10 +28,10 @@ int main( int argc, char* argv[] )
   }
   
   int index = 1;
-  char *inputFile, *outputFile = "output.bmp", *depthFile;
+  char *inputFile, *outputFile = "output.bmp", *depthFile, *normalsFile;
   int sizeX = 200, sizeY = 200;
   float depthMin, depthMax;
-  bool doDepth = false;
+  bool doDepth = false, doNormals = false;
   while (index < argc) {
     if (strcmp("-input", argv[index]) == 0) {
       inputFile = argv[++index];
@@ -45,6 +45,9 @@ int main( int argc, char* argv[] )
       depthMax = atof(argv[++index]);
       depthFile = argv[++index];
       doDepth = true;
+    } else if (strcmp("-normals", argv[index]) == 0) {
+      normalsFile = argv[++index];
+      doNormals = true;
     } else {
       cerr << "ERROR: bad command line arguments!";
     }
@@ -61,6 +64,7 @@ int main( int argc, char* argv[] )
   Group* group = scene.getGroup();
   Image image = Image(sizeX, sizeY);
   Image depthImage = Image(sizeX, sizeY);
+  Image normalImage = Image(sizeX, sizeY);
   Vector3f backgroundColor = Vector3f(0.0f, 0.0f, 0.0f);
   Vector3f hitColor = Vector3f(1.0f, 0.0f, 0.0f);
 
@@ -91,11 +95,21 @@ int main( int argc, char* argv[] )
           depthImage.SetPixel(i, j, Vector3f(c, c, c));
         }
       }
+      if (doNormals) {
+        Vector3f normal = hit.getNormal();
+        normal[0] = abs(normal[0]);
+        normal[1] = abs(normal[1]);
+        normal[2] = abs(normal[2]);
+        normalImage.SetPixel(i, j, normal.normalized() * Vector3f(1.0f, 1.0f, 1.0f));
+      }
     }
   }
   image.SaveImage(outputFile);
   if (doDepth) {
     depthImage.SaveImage(depthFile);
+  }
+  if (doNormals) {
+    normalImage.SaveImage(normalsFile);
   }
 
 
