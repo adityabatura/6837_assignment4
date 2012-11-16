@@ -87,7 +87,6 @@ int main( int argc, char* argv[] )
           light->getIllumination(ray.pointAtParameter(hit.getT()), dir, col, f);
           totalColor += hit.getMaterial()->Shade(ray, hit, dir, col);
         }
-
         image.SetPixel(i, j, totalColor);
       } else {
         image.SetPixel(i, j, backgroundColor);

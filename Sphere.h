@@ -31,7 +31,7 @@ public:
 		float a, b, c, disc, t1, t2, result;
 		Vector3f r_o = r.getOrigin() - this->center; // translate so that sphere @ (0,0,0)
 		Vector3f r_d = r.getDirection();
-		a = 1.0f;
+		a = r_d.abs();
 		b = 2 * Vector3f::dot(r_d, r_o);
 		c = Vector3f::dot(r_o, r_o) - this->radius*this->radius;
 		disc = b*b - 4*a*c; 

@@ -32,11 +32,25 @@ public:
 
   Vector3f Shade( const Ray& ray, const Hit& hit,
                   const Vector3f& dirToLight, const Vector3f& lightColor ) {
-    float d = Vector3f::dot(dirToLight, hit.getNormal());
+    Vector3f normal = hit.getNormal();
+    float d = Vector3f::dot(dirToLight, normal);
     if (d < 0) {
       d = 0;
     }
-    return d * Vector3f(diffuseColor[0]*lightColor[0], diffuseColor[1]*lightColor[1], diffuseColor[2]*lightColor[2]);		
+    Vector3f textureColor = diffuseColor;
+    if (t.valid()) {
+      textureColor = t(hit.texCoord[0], hit.texCoord[1]);
+    }
+    Vector3f diffuse = d * Vector3f(textureColor[0]*lightColor[0], textureColor[1]*lightColor[1], textureColor[2]*lightColor[2]);
+    Vector3f reflect = ray.getDirection() - 2 * Vector3f::dot(ray.getDirection(), normal) * normal.normalized();
+    float c_s = Vector3f::dot(dirToLight, reflect);
+    if (c_s > 0) {
+      c_s = pow(c_s, shininess);
+    } else {
+      c_s = 0.0f;
+    }
+    Vector3f specular = c_s * Vector3f(specularColor[0]*lightColor[0], specularColor[1]*lightColor[1], specularColor[2]*lightColor[2]);
+    return diffuse + specular;		
   }
 
   void loadTexture(const char * filename){

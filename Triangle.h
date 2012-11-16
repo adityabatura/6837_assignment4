@@ -52,6 +52,7 @@ public:
 		if (t >= tmin && t < hit.getT() && beta+gamma <= 1 && beta >= 0 && gamma >= 0) {
 			Vector3f normal = alpha * normals[0] + beta * normals[1] + gamma * normals[2];
 			hit.set(t, this->material, normal.normalized());
+			hit.setTexCoord(alpha * texCoords[0] + beta * texCoords[1] + gamma * texCoords[2]);
 			return true;
 		}
 		return false;
