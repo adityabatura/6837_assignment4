@@ -80,7 +80,7 @@ int main( int argc, char* argv[] )
       Hit hit = Hit();
       if (group->intersect(ray, hit, tmin)) {
         Vector3f totalColor = scene.getAmbientLight();
-        if (hit.hasTex) {
+        if (hit.hasTex && hit.getMaterial()->t.valid()) {
           totalColor = totalColor * hit.getMaterial()->t(hit.texCoord[0], hit.texCoord[1]);
         } else {
           totalColor = totalColor * hit.getMaterial()->getDiffuseColor();
