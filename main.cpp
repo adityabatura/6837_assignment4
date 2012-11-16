@@ -53,21 +53,20 @@ int main( int argc, char* argv[] )
     }
     ++index;
   }
-  //char* inputFile = "scene02_cube.txt";
-  //char* outputFile = "demo.bmp";
-  //int sizeX = 64, sizeY = 64;
 
   // First, parse the scene using SceneParser.
   SceneParser scene = SceneParser(inputFile);
   Camera* camera = scene.getCamera();
   float tmin = camera->getTMin();
   Group* group = scene.getGroup();
+
   Image image = Image(sizeX, sizeY);
   Image depthImage = Image(sizeX, sizeY);
   Image normalImage = Image(sizeX, sizeY);
-  Vector3f backgroundColor = Vector3f(0.0f, 0.0f, 0.0f);
-  Vector3f hitColor = Vector3f(1.0f, 0.0f, 0.0f);
 
+  Vector3f backgroundColor = scene.getBackgroundColor();
+  Vector3f ambientLight = scene.getAmbientLight();
+  int numLights = scene.getNumLights();
   // Then loop over each pixel in the image, shooting a ray
   // through that pixel and finding its intersection with
   // the scene.  Write the color at the intersection to that
@@ -80,7 +79,16 @@ int main( int argc, char* argv[] )
       Ray ray = camera->generateRay(Vector2f(x,y));
       Hit hit = Hit();
       if (group->intersect(ray, hit, tmin)) {
-        image.SetPixel(i, j, hitColor);
+        Vector3f totalColor = ambientLight;
+        for (int k=0; k < numLights; k++) {
+          Light* light = scene.getLight(k);
+          Vector3f dir, col;
+          float f;
+          light->getIllumination(ray.pointAtParameter(hit.getT()), dir, col, f);
+          totalColor += hit.getMaterial()->Shade(ray, hit, dir, col);
+        }
+
+        image.SetPixel(i, j, totalColor);
       } else {
         image.SetPixel(i, j, backgroundColor);
       }
