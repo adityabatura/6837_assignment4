@@ -32,9 +32,9 @@ public:
 		this->center = center;
 		this->direction = direction.normalized();
 		this->up = up.normalized();
-		this->horizontal = Vector3f::cross(this->direction, this->up);
+		this->horizontal = Vector3f::cross(this->direction, this->up).normalized();
 		this->angle = angle;
-		// this->up = Vector3f::cross(this->horizontal, this->direction);
+		this->up = Vector3f::cross(this->horizontal, this->direction).normalized();
 	}
 
 	virtual Ray generateRay( const Vector2f& point) {
