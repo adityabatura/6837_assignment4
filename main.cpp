@@ -79,7 +79,12 @@ int main( int argc, char* argv[] )
       Ray ray = camera->generateRay(Vector2f(x,y));
       Hit hit = Hit();
       if (group->intersect(ray, hit, tmin)) {
-        Vector3f totalColor = ambientLight;
+        Vector3f totalColor = scene.getAmbientLight();
+        if (hit.hasTex) {
+          totalColor = totalColor * hit.getMaterial()->t(hit.texCoord[0], hit.texCoord[1]);
+        } else {
+          totalColor = totalColor * hit.getMaterial()->getDiffuseColor();
+        }
         for (int k=0; k < numLights; k++) {
           Light* light = scene.getLight(k);
           Vector3f dir, col;
@@ -119,16 +124,6 @@ int main( int argc, char* argv[] )
     normalImage.SaveImage(normalsFile);
   }
 
-
-
-/*
-  ///TODO: below demonstrates how to use the provided Image class
-  ///Should be removed when you start
-  Vector3f pixelColor (1.0f,0,0);
-  //width and height
-  Image image( 10 , 15 );
-  image.SetPixel( 5,5, pixelColor );
-  image.SaveImage("demo.bmp");*/
   return 0;
 }
 

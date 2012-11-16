@@ -56,11 +56,13 @@ public:
   void loadTexture(const char * filename){
     t.load(filename);
   }
+
+  Texture t;
+
  protected:
   Vector3f diffuseColor;
   Vector3f specularColor;
   float shininess;
-  Texture t;
 };
 
 
